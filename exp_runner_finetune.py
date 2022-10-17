@@ -317,6 +317,7 @@ class Runner:
                 losses_lod0 = losses['losses_lod0']
 
                 self.optimizer.zero_grad()
+                print(loss)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.params_to_train, 1.0)
                 self.optimizer.step()

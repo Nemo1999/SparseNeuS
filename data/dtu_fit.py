@@ -205,7 +205,7 @@ class DtuFit:
         sample['scale_mat'] = torch.from_numpy(self.scale_mat)
         sample['trans_mat'] = torch.from_numpy(np.linalg.inv(self.ref_w2c))
         sample['img_wh'] = torch.from_numpy(np.array(self.img_wh))
-        sample['partial_vol_origin'] = torch.tensor(self.partial_vol_origin, dtype=torch.float32)
+        sample['partial_vol_origin'] = self.partial_vol_origin.clone().detach().to(torch.float32)
 
         return sample
 
@@ -234,7 +234,7 @@ class DtuFit:
         sample['scan'] = self.scan_id
         sample['scale_factor'] = torch.tensor(self.scale_factor)
         sample['img_wh'] = torch.from_numpy(np.array(self.img_wh))
-        sample['partial_vol_origin'] = torch.tensor(self.partial_vol_origin, dtype=torch.float32)
+        sample['partial_vol_origin'] = self.partial_vol_origin.clone().detach().to(torch.float32)
         sample['img_index'] = torch.tensor(render_idx)
 
         # - query image

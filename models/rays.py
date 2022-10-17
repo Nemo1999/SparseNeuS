@@ -10,7 +10,7 @@ from random import random
 
 def build_patch_offset(h_patch_size):
     offsets = torch.arange(-h_patch_size, h_patch_size + 1)
-    return torch.stack(torch.meshgrid(offsets, offsets)[::-1], dim=-1).view(1, -1, 2)  # nb_pixels_patch * 2
+    return torch.stack(torch.meshgrid(offsets, offsets,indexing='xy')[::-1], dim=-1).view(1, -1, 2)  # nb_pixels_patch * 2
 
 
 def gen_rays_from_single_image(H, W, image, intrinsic, c2w, depth=None, mask=None):
@@ -106,7 +106,7 @@ def gen_random_rays_from_single_image(H, W, N_rays, image, intrinsic, c2w, depth
     grid_patch_v = 2 * grid_patch[:, :, 1] / (H - 1) - 1
     grid_patch_uv = torch.stack([grid_patch_u, grid_patch_v], dim=-1)  # [N_pts, Npx, 2]
     patch_color = F.grid_sample(image[None, :, :, :], grid_patch_uv[None, :, :, :], mode='bilinear',
-                                padding_mode='zeros')[0]  # [3, N_pts, Npx]
+                                padding_mode='zeros',align_corners=True)[0]  # [3, N_pts, Npx]
     patch_color = patch_color.permute(1, 2, 0).contiguous()
 
     # normalized ndc uv coordinates, (-1, 1)

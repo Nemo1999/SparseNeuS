@@ -168,7 +168,7 @@ class SparseNeuSRenderer(nn.Module):
 
         pts = torch.flip(pts, dims=[-1])
 
-        pts_mask = F.grid_sample(mask_volume, pts, mode='nearest')  # [1, c, 1, 1, num_pts]
+        pts_mask = F.grid_sample(mask_volume, pts, mode='nearest', align_corners=True)  # [1, c, 1, 1, num_pts]
         pts_mask = pts_mask.view(-1, num_pts).permute(1, 0).contiguous()  # [num_pts, 1]
 
         return pts_mask
@@ -876,7 +876,7 @@ class SparseNeuSRenderer(nn.Module):
             for xi, xs in enumerate(X):
                 for yi, ys in enumerate(Y):
                     for zi, zs in enumerate(Z):
-                        xx, yy, zz = torch.meshgrid(xs, ys, zs)
+                        xx, yy, zz = torch.meshgrid(xs, ys, zs, indexing='xy')
                         pts = torch.cat([xx.reshape(-1, 1), yy.reshape(-1, 1), zz.reshape(-1, 1)], dim=-1).to(device)
 
                         # ! attention, the query function is different for extract geometry and fields
