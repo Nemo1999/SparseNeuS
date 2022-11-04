@@ -150,7 +150,7 @@ class SparseSdfNetwork(nn.Module):
                  multires=6,
                  ):
         super(SparseSdfNetwork, self).__init__()
-
+        
         self.lod = lod  # - gradually training, the current regularization lod
         self.ch_in = ch_in
         self.voxel_size = voxel_size  # - the voxel size of the current volume
@@ -455,7 +455,7 @@ class SparseSdfNetwork(nn.Module):
         :return:
         """
         x.requires_grad_(True)
-        output = self.sdf(x, conditional_volume, lod)
+        output = self.sdf(x, conditional_volume, lod )
         y = output['sdf_pts_scale%d' % lod]
 
         d_output = torch.ones_like(y, requires_grad=False, device=y.device)

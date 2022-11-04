@@ -876,7 +876,7 @@ class SparseNeuSRenderer(nn.Module):
             for xi, xs in enumerate(X):
                 for yi, ys in enumerate(Y):
                     for zi, zs in enumerate(Z):
-                        xx, yy, zz = torch.meshgrid(xs, ys, zs, indexing='xy')
+                        xx, yy, zz = torch.meshgrid(xs, ys, zs, indexing='ij')
                         pts = torch.cat([xx.reshape(-1, 1), yy.reshape(-1, 1), zz.reshape(-1, 1)], dim=-1).to(device)
 
                         # ! attention, the query function is different for extract geometry and fields

@@ -702,7 +702,19 @@ class FinetuneTrainer(nn.Module):
             tv = render_out['tv']
         else:
             tv = 0.0
-
+        """
+        ic(color_mlp_loss)
+        ic(color_patch_loss)
+        ic(self.color_patch_weight)
+        ic(sparse_loss)
+        ic(get_weight(iter_step,self.sdf_sparse_weight))
+        ic(gradient_error_loss)
+        ic(self.sdf_igr_weight)
+        ic(color_mlp_loss + \
+               color_patch_loss * self.color_patch_weight + \
+               sparse_loss * get_weight(iter_step, self.sdf_sparse_weight) + \
+               gradient_error_loss * self.sdf_igr_weight)
+        """
         loss = color_mlp_loss + \
                color_patch_loss * self.color_patch_weight + \
                sparse_loss * get_weight(iter_step, self.sdf_sparse_weight) + \

@@ -49,6 +49,7 @@ class Runner:
         # Initial setting
         self.device = torch.device('cuda')
         self.num_devices = torch.cuda.device_count()
+        
 
         self.logger = logging.getLogger('exp_logger')
 
@@ -204,7 +205,8 @@ class Runner:
         self.optimizer_setup()
 
         self.trainer = torch.nn.DataParallel(self.trainer).to(self.device)
-
+        # self.trainer.to(self.device)
+        
         if self.mode[:5] == 'train':
             self.file_backup()
 
@@ -317,7 +319,6 @@ class Runner:
                 losses_lod0 = losses['losses_lod0']
 
                 self.optimizer.zero_grad()
-                print(loss)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.params_to_train, 1.0)
                 self.optimizer.step()

@@ -10,7 +10,7 @@ from random import random
 
 def build_patch_offset(h_patch_size):
     offsets = torch.arange(-h_patch_size, h_patch_size + 1)
-    return torch.stack(torch.meshgrid(offsets, offsets,indexing='xy')[::-1], dim=-1).view(1, -1, 2)  # nb_pixels_patch * 2
+    return torch.stack(torch.meshgrid(offsets, offsets,indexing='ij')[::-1], dim=-1).view(1, -1, 2)  # nb_pixels_patch * 2
 
 
 def gen_rays_from_single_image(H, W, image, intrinsic, c2w, depth=None, mask=None):
@@ -24,7 +24,7 @@ def gen_rays_from_single_image(H, W, image, intrinsic, c2w, depth=None, mask=Non
     """
     device = image.device
     ys, xs = torch.meshgrid(torch.linspace(0, H - 1, H),
-                            torch.linspace(0, W - 1, W))  # pytorch's meshgrid has indexing='ij'
+                            torch.linspace(0, W - 1, W), indexing='ij')  # pytorch's meshgrid has indexing='ij'
     p = torch.stack([xs, ys, torch.ones_like(ys)], dim=-1)  # H, W, 3
 
     # normalized ndc uv coordinates, (-1, 1)
