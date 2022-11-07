@@ -12,7 +12,10 @@ from models.rays import gen_rays_from_single_image, gen_random_rays_from_single_
 from data.scene import get_boundingbox
 
 
-def load_K_Rt_from_P(filename, P=None):
+
+
+
+def load_K_Rt_from_P(filename, P=None, perturb_rmat=None, perturb_tvec=None):
     if P is None:
         lines = open(filename).read().splitlines()
         if len(lines) == 4:
@@ -24,7 +27,10 @@ def load_K_Rt_from_P(filename, P=None):
     K = out[0]
     R = out[1]
     t = out[2]
-
+    if not perturb_rmat is None: 
+        R = R @ perturb_rmat
+    if not perturb_tvec is None: 
+        t = t + perturb_tvec
     K = K / K[2, 2]
     intrinsics = np.eye(4)
     intrinsics[:3, :3] = K
@@ -39,9 +45,11 @@ def load_K_Rt_from_P(filename, P=None):
 class DtuFit:
     def __init__(self, root_dir, split, scan_id, n_views, train_img_idx=[], test_img_idx=[],
                  img_wh=[800, 600], clip_wh=[0, 0], original_img_wh=[1600, 1200],
-                 N_rays=512, h_patch_size=5, near=425, far=900):
+                 N_rays=512, h_patch_size=5, near=425, far=900, perturb_rmat=None, perturb_tvec=None):
         super(DtuFit, self).__init__()
         logging.info('Load data: Begin')
+
+        self.perturb = (perturb_rmat, perturb_tvec)
 
         self.root_dir = root_dir
         self.split = split
@@ -120,7 +128,12 @@ class DtuFit:
 
             P = self.world_mats_np[idx]
             P = P[:3, :4]
-            intrinsics, c2w = load_K_Rt_from_P(None, P)
+            # perturbe the first image
+            if == 1: 
+                intrinsics, c2w = load_K_Rt_from_P(None, P, *self.perturb)
+            else: 
+                intrinsics, c2w = load_K_Rt_from_P(None, P)
+
             w2c = np.linalg.inv(c2w)
 
             intrinsics[:1] *= scale_x

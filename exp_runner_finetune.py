@@ -16,7 +16,7 @@ from torch.utils.tensorboard import SummaryWriter
 from icecream import ic
 from tqdm import tqdm
 from pyhocon import ConfigFactory, HOCONConverter
-
+import math
 from models.fields import SingleVarianceNetwork
 
 from models.featurenet import FeatureNet
@@ -233,6 +233,13 @@ class Runner:
         """
         dataset = DtuFit
 
+       
+        degs = self.conf['general.perturb_r']
+        NOISE_R = np.array([0, degs/180 * math.pi, 0] )
+        NOISE_T = np.array([0, 0, 0])
+        noise_rmat = np.zeros([3,3])
+        cv.Rodrigues(NOISE_R, noise_rmat)
+        
         self.train_dataset = dataset(
             root_dir=self.conf['dataset.testpath'], split='train',
             N_rays=self.conf.get_int('train.N_rays'),
@@ -244,7 +251,9 @@ class Runner:
             test_img_idx=self.conf.get_list('dataset.test_img_idx', default=[]),
             h_patch_size=self.conf.get_int('model.h_patch_size', default=5),
             near=self.conf.get_float('dataset.near'),
-            far=self.conf.get_float('dataset.far')
+            far=self.conf.get_float('dataset.far'), 
+            perturb_rmat = noise_rmat,
+            perturb_tvec =  NOISE_T
         )
 
         self.test_dataset = dataset(
