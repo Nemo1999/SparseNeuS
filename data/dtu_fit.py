@@ -129,7 +129,7 @@ class DtuFit:
             P = self.world_mats_np[idx]
             P = P[:3, :4]
             # perturbe the first image
-            if == 1: 
+            if idx == 1: 
                 intrinsics, c2w = load_K_Rt_from_P(None, P, *self.perturb)
             else: 
                 intrinsics, c2w = load_K_Rt_from_P(None, P)
